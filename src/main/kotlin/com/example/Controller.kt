@@ -4,49 +4,79 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.SpringApplication
-import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
-import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestMethod.GET
+import org.springframework.web.bind.annotation.RequestMethod.POST
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
+import java.net.URI
 import java.sql.SQLException
 import java.util.*
 import javax.sql.DataSource
 
-@Controller
+@RestController
 class Controller {
 
     @Value("\${spring.datasource.url}")
     private var dbUrl: String? = null
 
     @Autowired
-    lateinit private var dataSource: DataSource
+    private lateinit var dataSource: DataSource
 
-    @RequestMapping("/")
-    internal fun index(): String {
-        return "index"
+    @RequestMapping(
+            method = [GET],
+            produces = ["application/json"],
+            value = ["/"]
+
+    )
+    internal fun root(): String {
+        return """ {"test": "hello, world"} """
     }
 
-    @RequestMapping("/db")
-    internal fun db(model: MutableMap<String, Any>): String {
-        val connection = dataSource.getConnection()
+    @RequestMapping(
+            method = [GET],
+            produces = ["application/json"],
+            value = ["/user"]
+
+    )
+    internal fun user(@RequestParam("id") id: Int): String {
+        return """ {"user": "its a user $id"} """
+    }
+
+    @RequestMapping(
+            method = [POST],
+            produces = ["application/json"],
+            value = ["/user"]
+
+    )
+    internal fun postUser(): String {
+        return """ {"user": "You posted a user"} """
+    }
+
+    @RequestMapping(
+            method = [GET],
+            produces = ["application/json"],
+            value = ["/db"]
+
+    )
+    internal fun db(): List<String>? {
+        val connection = dataSource.connection
         try {
             val stmt = connection.createStatement()
-            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)")
-            stmt.executeUpdate("INSERT INTO ticks VALUES (now())")
-            val rs = stmt.executeQuery("SELECT tick FROM ticks")
+            val rs = stmt.executeQuery("SELECT * FROM test")
 
             val output = ArrayList<String>()
             while (rs.next()) {
-                output.add("Read from DB: " + rs.getTimestamp("tick"))
+                output.add("Read from DB: " + rs.getInt("test1"))
+                output.add("Read from DB: " + rs.getString("test2"))
             }
 
-            model.put("records", output)
-            return "db"
+            connection.close()
+            return output
         } catch (e: Exception) {
             connection.close()
-            model.put("message", e.message ?: "Unknown error")
-            return "error"
+            return null
         }
 
     }
@@ -54,12 +84,22 @@ class Controller {
     @Bean
     @Throws(SQLException::class)
     fun dataSource(): DataSource {
-        if (dbUrl?.isEmpty() ?: true) {
-            return HikariDataSource()
+        return if (dbUrl?.isEmpty() != false) {
+            val dbUri = URI(System.getenv("DATABASE_URL"))
+            val username = dbUri.userInfo.split(":")[0]
+            val password = dbUri.userInfo.split(":")[1]
+            val url = "jdbc:postgresql://" + dbUri.host +
+                    ':' + dbUri.port + dbUri.path + "?sslmode=require"
+
+            val config = HikariConfig()
+            config.username = username
+            config.password = password
+            config.jdbcUrl = url
+            HikariDataSource(config)
         } else {
             val config = HikariConfig()
             config.jdbcUrl = dbUrl
-            return HikariDataSource(config)
+            HikariDataSource(config)
         }
     }
 }
