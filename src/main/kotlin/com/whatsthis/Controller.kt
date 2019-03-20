@@ -18,8 +18,6 @@ import javax.sql.DataSource
 @RestController
 class Controller {
 
-    @Value("\${spring.datasource.url}")
-    private var dbUrl: String? = null
 
     @Autowired
     private lateinit var dataSource: DataSource
@@ -71,25 +69,4 @@ class Controller {
 
     }
 
-    @Bean
-    @Throws(SQLException::class)
-    fun dataSource(): DataSource {
-        return if (dbUrl?.isEmpty() != false) {
-            val dbUri = URI(System.getenv("DATABASE_URL"))
-            val username = dbUri.userInfo.split(":")[0]
-            val password = dbUri.userInfo.split(":")[1]
-            val url = "jdbc:postgresql://" + dbUri.host +
-                    ':' + dbUri.port + dbUri.path + "?sslmode=require"
-
-            val config = HikariConfig()
-            config.username = username
-            config.password = password
-            config.jdbcUrl = url
-            HikariDataSource(config)
-        } else {
-            val config = HikariConfig()
-            config.jdbcUrl = dbUrl
-            HikariDataSource(config)
-        }
-    }
 }
