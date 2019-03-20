@@ -1,4 +1,4 @@
-package com.example
+package com.whatsthis
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -32,16 +32,6 @@ class Controller {
     )
     internal fun root(): String {
         return """ {"test": "hello, world"} """
-    }
-
-    @RequestMapping(
-            method = [GET],
-            produces = ["application/json"],
-            value = ["/user"]
-
-    )
-    internal fun user(@RequestParam("id") id: Int): String {
-        return """ {"user": "its a user $id"} """
     }
 
     @RequestMapping(
