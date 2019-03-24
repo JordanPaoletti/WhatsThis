@@ -26,11 +26,14 @@ CREATE TABLE notification_types (
 
 CREATE TABLE user_notifications (
   id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL,
   type_id INTEGER NOT NULL,
   read BOOLEAN DEFAULT FALSE,
   time TIMESTAMP DEFAULT NOW(),
   cause_id INTEGER,
-  link_id INTEGER
+  link_id INTEGER,
+  FOREIGN KEY (user_id) REFERENCES users (id),
+  FOREIGN KEY (type_id) REFERENCES notification_types (id)
 );
 
 CREATE TABLE asks (

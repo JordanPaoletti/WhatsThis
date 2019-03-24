@@ -22,6 +22,7 @@ class Controller {
     @Autowired
     private lateinit var dataSource: DataSource
 
+
     @RequestMapping(
             method = [GET],
             produces = ["application/json"],
@@ -30,16 +31,6 @@ class Controller {
     )
     internal fun root(): String {
         return """ {"test": "hello, world"} """
-    }
-
-    @RequestMapping(
-            method = [POST],
-            produces = ["application/json"],
-            value = ["/user"]
-
-    )
-    internal fun postUser(): String {
-        return """ {"user": "You posted a user"} """
     }
 
     @RequestMapping(
