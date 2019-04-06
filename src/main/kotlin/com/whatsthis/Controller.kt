@@ -1,5 +1,10 @@
 package com.whatsthis
 
+import com.amazonaws.auth.AWSCredentials
+import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.regions.Region
+import com.amazonaws.regions.Regions
+import com.amazonaws.services.s3.AmazonS3Client
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,6 +26,27 @@ class Controller {
 
     @Autowired
     private lateinit var dataSource: DataSource
+
+    @Value("\${aws.access-key-id}")
+    private var access: String? = null
+    @Value("\${aws.secret-access-key}")
+    private var secret: String? = null
+    @Value("\${aws.bucket-name}")
+    private var bucket: String? = null
+
+
+
+    @RequestMapping(
+            method = [GET],
+            produces = ["application/json"],
+            value = ["/tests3"]
+    )
+    internal fun test(): String {
+        val s3 = AmazonS3Client(BasicAWSCredentials(access, secret))
+        val buckets = s3.listBuckets().mapNotNull { it.name }.joinToString(", ")
+
+        return """ {"buckets": "$buckets"} """
+    }
 
 
     @RequestMapping(
