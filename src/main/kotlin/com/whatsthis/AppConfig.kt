@@ -1,5 +1,8 @@
 package com.whatsthis
 
+import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.model.Region
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import org.springframework.beans.factory.annotation.Value
@@ -11,6 +14,23 @@ import javax.sql.DataSource
 
 @Configuration
 open class AppConfig {
+
+    @Value("\${aws.access-key-id}")
+    private var access: String? = null
+
+    @Value("\${aws.secret-access-key}")
+    private var secret: String? = null
+
+    /*
+    @Value("\${aws.bucket-name}")
+    private var bucket: String? = null
+    */
+
+    @Bean
+    open fun awsS3Client(): AmazonS3Client {
+        return AmazonS3Client(BasicAWSCredentials(access, secret))
+    }
+
 
     @Value("\${spring.datasource.url}")
     private var dbUrl: String? = null
