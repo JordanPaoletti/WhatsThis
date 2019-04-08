@@ -5,13 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 import javax.sql.DataSource
 
-@Repository("classroomDao")
+@Repository("asksDao")
 class AsksDAO {
 
     @Autowired
     private lateinit var dataSource: DataSource
-
-
 
     fun getAsk(id: Int): Ask? {
         return execQuery(
