@@ -1,6 +1,7 @@
 package com.whatsthis.controllers.answers
 
 import com.whatsthis.utils.execQuery
+import com.whatsthis.utils.execStatement
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 import javax.sql.DataSource
@@ -30,5 +31,19 @@ class AnswerDAO {
                     return answers
                 }
         )
+    }
+
+    fun answerAsk(answer: AnswerPost) {
+        execStatement(
+                dataSource,
+                """
+                    INSERT INTO answers (answer, poster_id, ask_id)
+                    VALUES (?, ?, ?)
+                """
+        ) { stmt ->
+            stmt.setString(1, answer.answer)
+            stmt.setInt(2, answer.posterId)
+            stmt.setInt(3, answer.askId)
+        }
     }
 }
