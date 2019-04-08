@@ -1,40 +1,42 @@
-# kotlin-getting-started
+# What's This
 
-A barebones Kotlin app, which can easily be deployed to Heroku.
-
-This application supports the [Getting Started with Kotlin on Heroku](https://devcenter.heroku.com/articles/getting-started-with-kotlin) article - check it out.
-
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+The backend for the What's This mobile app created for BSU's CS469 HCI
 
 ## Running Locally
 
-Make sure you have Java and Maven installed.  Also, install the [Heroku CLI](https://cli.heroku.com/).
+You will need java, kotlin and gradle installed.
+
+### Heroku Setup
+
+You will need a Heroku account with a web application and postgresql database
+attached to said application. You will also need an Amazon AWS account with a a valid S3
+bucket that has public access permissions.
+
+Follow the various official documentation provided by heroku and amazon to 
+find the proper security credentials for the app to use.
+
+You will need a .env file in the root folder with
+the following values filled in
+
+```
+DATABASE_URL=database_url_credentials
+AWS_ACCESS_KEY_ID=xxxxx
+AWS_SECRET_ACCESS_KEY=yyyyyy
+S3_BUCKET_NAME=zzzzzz
+```
+
+You will need to run all the files in the sql folder to properly
+set up the postgresql database.
+
+Finally, run a gradle build and the following
+commands in the project directory
 
 ```sh
-$ git clone https://github.com/heroku/kotlin-getting-started.git
-$ cd kotlin-getting-started
-$ mvn install
-$ heroku local:start
+heroku login
+heroku local
 ```
 
-Your app should now be running on [localhost:5000](http://localhost:5000/).
+The app should now be deployed to localhost:5000/
 
-If you're going to use a database, ensure you have a local `.env` file that reads something like this:
 
-```
-JDBC_DATABASE_URL=jdbc:postgresql://localhost:5432/java_database_name
-```
 
-## Deploying to Heroku
-
-```sh
-$ heroku create
-$ git push heroku master
-$ heroku open
-```
-
-## Documentation
-
-For more information about using Java and Kotlin on Heroku, see these Dev Center articles:
-
-- [Java on Heroku](https://devcenter.heroku.com/categories/java)
