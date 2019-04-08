@@ -1,6 +1,5 @@
 package com.whatsthis.controllers.classroom
 
-import com.whatsthis.controllers.user.User
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -20,7 +19,6 @@ class ClassroomController {
             value = [""]
     )
     internal fun getClassroom(@RequestParam("id") id: Int): Classroom? {
-
         return classroomDao.getClassroom(id)
     }
 }

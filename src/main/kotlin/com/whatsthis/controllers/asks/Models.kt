@@ -12,3 +12,10 @@ data class Ask(
         val answered: Boolean,
         val points: Int
 )
+
+data class AskPost(
+        val imgLink: String,
+        val description: String,
+        val posterId: Int,
+        val classId: Int
+)
